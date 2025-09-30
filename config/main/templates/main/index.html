@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YOLO 얼굴 분석</title>
+</head>
+<body>
+    <h1>이미지를 선택하세요</h1>
+    <input type="file" id="imageInput" accept="image/*"><br><br>
+    
+    <div id="resultMessage"></div>
+    <img id="resultImage" src="" alt="결과 이미지" style="display:none; width:400px;">
+
+    <script>
+        const input = document.getElementById("imageInput");
+        const resultMsg = document.getElementById("resultMessage");
+        const resultImg = document.getElementById("resultImage");
+
+        input.addEventListener("change", async function () {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            resultMsg.innerText = "처리 중입니다...";
+            resultImg.style.display = "none";
+
+            const response = await fetch("/analyze/", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            resultMsg.innerText = data.result;
+            if (data.image_url) {
+                resultImg.src = data.image_url + "?t=" + new Date().getTime();  // 캐싱 방지
+                resultImg.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
