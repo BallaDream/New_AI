@@ -17,8 +17,8 @@
 - 서비스 배포 환경 : AWS - EC2 , Django
 
  ## Main Framework
-  - Roboflow
-  - ultralytics
+  - Resnet
+  - Ultralytics
   - Pytorch
   - Langchain
 ## 이미지 출처
@@ -35,7 +35,6 @@
  # Workflow
 
  <img width="1001" height="667" alt="image" src="https://github.com/user-attachments/assets/62d5688f-82e9-48d5-8348-760c36fd84ff" />
-
-
+ 
 
 
