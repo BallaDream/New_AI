@@ -16,7 +16,7 @@
 - 협업 툴 : Notion, Postman
 - 서비스 배포 환경 : AWS - EC2 , Django
 
- ## Main Framework
+ ## 👨‍🎓Main Framework
   - Resnet
   - Ultralytics
   - Pytorch
