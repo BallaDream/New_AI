@@ -21,7 +21,10 @@
   - ultralytics
   - Pytorch
   - Langchain
-
+## 이미지 출처
+![한국인 피부상태 측정 데이터](https://www.aihub.or.kr/aihubdata/data/view.do?searchKeyword=%ED%94%BC%EB%B6%80&aihubDataSe=data&dataSetSn=71645)
+![의약품, 화장품 패키징 OCR 데이터](https://www.aihub.or.kr/aihubdata/data/view.do?pageIndex=1&currMenu=&topMenu=&srchOptnCnd=OPTNCND001&searchKeyword=%ED%99%94%EC%9E%A5%ED%92%88&srchDetailCnd=DETAILCND001&srchOrder=ORDER001&srchPagePer=20&aihubDataSe=data&dataSetSn=633)
+![Eye & Face Detection Model](https://universe.roboflow.com/wooks/eyes3.0-ptae2/dataset/5)
  -----------
  # Workflow
 
