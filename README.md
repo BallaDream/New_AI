@@ -1,3 +1,5 @@
+# 피부 상태분석에 따른 화장품 챗봇 시스템
+
 # 🌐 Service
 -------
 
@@ -6,6 +8,7 @@
  # AI Engineer
 ![face.jpg](https://github.com/BallaDream/New_AI/blob/main/img/face.jpg)
 -------
+
 
 # ⚒️기술스택
 - Back-end : Python
@@ -23,5 +26,7 @@
  # Workflow
 
  <img width="1001" height="667" alt="image" src="https://github.com/user-attachments/assets/62d5688f-82e9-48d5-8348-760c36fd84ff" />
+
+
 
 
