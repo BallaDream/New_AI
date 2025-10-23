@@ -47,14 +47,16 @@ def initialize_qa_chain():
     """RAG 체인을 서버 시작 시 단 한 번만 초기화하는 함수"""
     try:
         # 1) 로컬 파일 경로 설정 (manage.py 위치 기준)
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        print(base_dir)
-        # index_path = os.path.join(base_dir, "rag_model", "cosmetic_faiss.index")
-        # data_path = os.path.join(base_dir, "rag_model", "cosmetic_data2.pkl")
-        # if not os.path.exists(index_path):
-        #      print(f"ERROR: FAISS index file not found at: {index_path}")
-        #      # 이 부분이 오류를 발생시킨 경로와 일치해야 합니다.
-        #      raise FileNotFoundError(f"FAISS index file not found at: {index_path}")
+        index_path = os.path.join("main", "rag_model", "cosmetic_faiss.index")
+        data_path = os.path.join("main/rag_model","cosmetic_data2.pkl")
+        if not os.path.exists(index_path):
+            print("[DEBUG] S3에서 RAG 파일 다운로드 시작...")
+            os.makedirs("main/rag_model/faiss_index", exist_ok=True) 
+            s3 = boto3.client('s3')
+            
+            s3.download_file(S3_BUCKET_NAME, S3_FAISS_KEY, index_path)
+            s3.download_file(S3_BUCKET_NAME, S3_PKL_KEY, data_path) # PKL 파일도 S3에 올려야 함
+            print("[DEBUG] S3 다운로드 완료.")
         index = faiss.read_index("main/rag_model/faiss_index/cosmetic_faiss.index")
         
         with open("main/rag_model/faiss_index/cosmetic_data2.pkl", "rb") as f:
@@ -187,4 +189,5 @@ def preprocess_query(query):
 
     return text
 # 전역 변수로 체인 저장
+
 # global_qa_chain = None
