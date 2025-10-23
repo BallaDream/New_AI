@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <title>YOLO 얼굴 분석</title>
@@ -11,6 +11,7 @@
     <img id="resultImage" src="" alt="결과 이미지" style="display:none; width:400px;">
 
     <script>
+       
         const input = document.getElementById("imageInput");
         const resultMsg = document.getElementById("resultMessage");
         const resultImg = document.getElementById("resultImage");
@@ -38,6 +39,181 @@
                 resultImg.style.display = "block";
             }
         });
+    </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI 피부 분석 및 추천</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; display: flex; flex-direction: column; align-items: center; }
+        .main-container { display: flex; width: 90%; max-width: 1200px; margin-top: 20px; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+        .analysis-area { flex: 1; padding-right: 20px; border-right: 1px solid #eee; }
+        .chatbot-container { flex: 1; padding-left: 20px; display: flex; flex-direction: column; height: 600px; }
+        .chat-header { background-color: #4CAF50; color: white; padding: 10px; text-align: center; border-radius: 5px 5px 0 0; }
+        .chat-window { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid #ddd; border-top: none; }
+        .message { max-width: 80%; padding: 8px 12px; border-radius: 15px; word-wrap: break-word; }
+        .user-message { align-self: flex-end; background-color: #DCF8C6; }
+        .bot-message { align-self: flex-start; background-color: #EAEAEA; }
+        .input-container { padding-top: 10px; border-top: 1px solid #ddd; display: flex; }
+        #user-input { flex-grow: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px; }
+        #send-button { background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        #send-button:disabled { background-color: #A5D6A7; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>AI 기반 피부 분석 및 맞춤 추천</h1>
+    
+    <div class="main-container">
+        <div class="analysis-area">
+            <h2>이미지 분석</h2>
+            <input type="file" id="imageInput" accept="image/*"><br><br>
+            
+            <div id="resultMessage">분석 결과를 기다립니다...</div>
+            <img id="resultImage" src="" alt="결과 이미지" style="display:none; width:400px;">
+        </div>
+
+        <div class="chatbot-container">
+            <div class="chat-header">맞춤형 화장품 전문가</div>
+            <div class="chat-window" id="chat-window">
+                <div class="message bot-message">안녕하세요! 분석 결과를 받은 후, 질문해 주시면 추천해 드릴게요.</div>
+            </div>
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="분석 결과를 바탕으로 질문하세요..." >
+                <button id="send-button">전송</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 🚨 챗봇 API 엔드포인트 설정 (Django urls.py 경로 확인) 🚨
+        
+
+        // DOM 요소 정의
+        const input = document.getElementById("imageInput");
+        const resultMsg = document.getElementById("resultMessage");
+        const resultImg = document.getElementById("resultImage");
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        let currentAnalysisResult = null; // 🚨 AI 분석 결과 JSON을 저장할 변수
+
+        // --- 유틸리티 함수 ---
+        function appendMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+            messageDiv.textContent = text;
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // --- 1단계: AI 분석 로직 (기존 코드 수정) ---
+        input.addEventListener("change", async function () {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            resultMsg.innerText = "처리 중입니다... (분석 중)";
+            resultImg.style.display = "none";
+
+
+            try {
+                const response = await fetch("/analyze/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // 🚨 핵심 수정: data.result는 JSON 객체이므로 문자열로 표시
+                resultMsg.innerText = JSON.stringify(data.result, null, 2); 
+                
+                if (response.ok && data.image_url) {
+                    // ✅ 1. 분석 성공: 챗봇 활성화 및 결과 저장
+                    resultImg.src = data.image_url + "?t=" + new Date().getTime(); 
+                    resultImg.style.display = "block";
+                    
+                    // 🚨 data.result가 최종 결과 JSON이라고 가정하고 저장
+                    currentAnalysisResult = data.result; 
+                    
+                    appendMessage('bot', '✅ AI 분석 완료! 이제 결과를 바탕으로 화장품을 추천받으세요.');
+                    userInput.focus();
+                    
+                } else {
+                    // 2. 분석 실패 (threshold 미달 등)
+                    currentAnalysisResult = null;
+                    appendMessage('bot', `⚠️ 분석 실패: ${data.result}`);
+                }
+            } catch (error) {
+                resultMsg.innerText = "서버 연결 오류가 발생했습니다.";
+                appendMessage('bot', '🔴 분석 서버에 접속할 수 없습니다.');
+            }
+        });
+
+
+        // --- 2단계: 챗봇 전송 로직 (신규 추가) ---
+
+        async function sendChatRequest(query) {
+            
+            if (!query) return;
+            appendMessage('user', query);
+            
+            // 🚨 쿼리 강화: 분석 결과 JSON을 문자열로 만들어 사용자 질문에 결합
+            const analysisString = JSON.stringify(currentAnalysisResult);
+            const finalQuery = `나의 피부 분석 결과는 ${analysisString} 입니다. 이 결과를 바탕으로 ${query}`;
+
+            // 로딩 스피너 표시 및 UI 비활성화
+            const spinner = document.createElement('div');
+            spinner.classList.add('message', 'bot-message', 'spinner'); // spinner CSS 필요
+            chatWindow.appendChild(spinner);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            userInput.disabled = true;
+            sendButton.disabled = true;
+
+            try {
+                const response = await fetch("/recommend/", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: finalQuery }) // ⬅️ 강화된 쿼리 전송
+                });
+
+                chatWindow.removeChild(spinner);
+                
+                const data = await response.json();
+                const botAnswer = data.recommendation || data.error || "답변을 받지 못했습니다.";
+                
+                appendMessage('bot', botAnswer);
+
+            } catch (error) {
+                const currentSpinner = document.querySelector('.spinner');
+                if (currentSpinner) chatWindow.removeChild(currentSpinner);
+                appendMessage('bot', `🔴 챗봇 서버 연결 오류: ${error.message}`);
+            } finally {
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                userInput.value = '';
+                userInput.focus();
+            }
+        }
+
+        // --- 이벤트 리스너 연결 ---
+        sendButton.addEventListener('click', () => {
+            const query = userInput.value.trim();
+            if (query) {
+                sendChatRequest(query);
+            }
+        });
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+        
     </script>
 </body>
 </html>
