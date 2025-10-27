@@ -1,5 +1,5 @@
 # main/rag_service.py
-import boto3
+
 import pickle, faiss, os
 # from langchain_community import OpenAIEmbeddings, ChatOpenAI # 최신 langchain-openai 사용
 # from langchain_community.vectorstores import FAISS
@@ -22,7 +22,7 @@ import re
 
 # API 키는 환경 변수에서 로드하거나, 안전한 방식으로 관리해야 합니다.
 # settings.py에 API_KEY를 설정하고 os.environ.get('API_KEY')로 불러오는 것을 권장합니다.
-OPENAI_API_KEY = "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" # 실제 키 입력
+OPENAI_API_KEY = "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" # 실제 키 입력
 import re
 from konlpy.tag import Okt
 
@@ -43,12 +43,24 @@ def remove_stopwords(text):
     stopwords = ['하다','있다','같다','자다','않다','되다','쓰다','이다','진짜','써다','들다','되어다','너무','같아요','그래서','그리고']
     return ' '.join([w for w in text.split() if w not in stopwords])
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"#임시
+import boto3 
+
+
+S3_BUCKET_NAME = 'balladream-faissindex' # ✅ 고객님의 버킷 이름
+S3_FAISS_KEY = 'cosmetic_faiss.index' # ✅ S3에 저장된 파일 경로 (faiss/cosmetic_faiss.index 경로를 사용하셨다면 그 경로를 입력)
+S3_PKL_KEY = 'cosmetic_data2.pkl'
 def initialize_qa_chain():
     """RAG 체인을 서버 시작 시 단 한 번만 초기화하는 함수"""
     try:
         # 1) 로컬 파일 경로 설정 (manage.py 위치 기준)
+
         index_path = os.path.join("main", "rag_model", "cosmetic_faiss.index")
         data_path = os.path.join("main/rag_model","cosmetic_data2.pkl")
+        # data_path = os.path.join(base_dir, "rag_model", "cosmetic_data2.pkl")
+        # if not os.path.exists(index_path):
+        #      print(f"ERROR: FAISS index file not found at: {index_path}")
+        #      # 이 부분이 오류를 발생시킨 경로와 일치해야 합니다.
+        #      raise FileNotFoundError(f"FAISS index file not found at: {index_path}")
         if not os.path.exists(index_path):
             print("[DEBUG] S3에서 RAG 파일 다운로드 시작...")
             os.makedirs("main/rag_model/faiss_index", exist_ok=True) 
@@ -189,6 +201,4 @@ def preprocess_query(query):
 
     return text
 # 전역 변수로 체인 저장
-
 # global_qa_chain = None
-
