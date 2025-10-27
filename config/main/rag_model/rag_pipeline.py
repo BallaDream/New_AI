@@ -22,7 +22,7 @@ import re
 
 # API 키는 환경 변수에서 로드하거나, 안전한 방식으로 관리해야 합니다.
 # settings.py에 API_KEY를 설정하고 os.environ.get('API_KEY')로 불러오는 것을 권장합니다.
-OPENAI_API_KEY = "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" # 실제 키 입력
+OPENAI_API_KEY = "" # 실제 키 입력
 import re
 from konlpy.tag import Okt
 
@@ -202,3 +202,4 @@ def preprocess_query(query):
     return text
 # 전역 변수로 체인 저장
 # global_qa_chain = None
+
