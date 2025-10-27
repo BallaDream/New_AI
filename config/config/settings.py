@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-#v*2ah-+q)4#56z5bzns$83mug!dds9tentgv8t$+-^rk9qm2_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ "http://localhost:5173","http://3.148.242.36:8000", "https://balladream.shop" ,"http:3.144.230.195:8000"] # (필요 시)]
+ALLOWED_HOSTS = [ "http://localhost:5173","http://3.148.242.36:8000", "https://balladream.shop" ,"http://3.144.230.195:8000"] # (필요 시)]
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
