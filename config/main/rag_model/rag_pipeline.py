@@ -1,5 +1,5 @@
 # main/rag_service.py
-
+import boto3
 import pickle, faiss, os
 # from langchain_community import OpenAIEmbeddings, ChatOpenAI # 최신 langchain-openai 사용
 # from langchain_community.vectorstores import FAISS
@@ -191,3 +191,4 @@ def preprocess_query(query):
 # 전역 변수로 체인 저장
 
 # global_qa_chain = None
+
